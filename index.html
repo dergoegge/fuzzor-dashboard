@@ -160,7 +160,7 @@
         <option value="stopped">Stopped count</option>
       </select>
     </div>
-    <div id="harness-list" class="flex-1 overflow-y-auto">
+    <div id="harness-list" class="flex-1 overflow-y-auto min-h-0">
       <div class="p-4 text-xs" style="color:var(--text-tertiary);">Loading...</div>
     </div>
     <div class="p-3 text-[11px]" style="border-top:1px solid var(--border); color:var(--text-tertiary);">
@@ -791,8 +791,8 @@
               class="input px-2.5 py-1 text-xs w-48">
             <div id="hso-filters" class="flex flex-wrap gap-1"></div>
           </div>
-          <div class="overflow-x-auto"><table class="w-full text-xs">
-            <thead><tr style="color:var(--text-tertiary); border-bottom:1px solid var(--border);">
+          <div class="overflow-x-auto" style="max-height:400px; overflow-y:auto;"><table class="w-full text-xs">
+            <thead style="position:sticky; top:0; z-index:1; background:var(--bg-surface);"><tr style="color:var(--text-tertiary); border-bottom:1px solid var(--border);">
               <th class="text-left py-2 pr-4 font-medium cursor-pointer select-none hso-sort" data-col="name">Harness <span class="hso-arrow"></span></th>
               <th class="text-right py-2 px-2 font-medium cursor-pointer select-none hso-sort" data-col="campaigns">Total <span class="hso-arrow"></span></th>
               <th class="text-right py-2 px-2 font-medium cursor-pointer select-none hso-sort" data-col="running">Running <span class="hso-arrow"></span></th>
