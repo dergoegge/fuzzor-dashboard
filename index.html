@@ -188,7 +188,7 @@
   </aside>
 
   <!-- Main content -->
-  <main class="flex-1 p-6 overflow-y-auto min-h-screen">
+  <main class="flex-1 p-6 overflow-y-auto min-h-screen" style="background:var(--bg-base);">
     <div id="placeholder" class="flex items-center justify-center h-full">
       <div class="text-center" style="color:var(--text-tertiary);">
         <svg class="mx-auto mb-4 w-12 h-12" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1454,20 +1454,13 @@
       if (c.stats.length > 0) {
         html += `<div class="card p-5">
           <span class="section-label">Stats History</span>
-          <div class="overflow-x-auto mt-3"><table class="w-full text-xs">
-            <thead><tr style="color:var(--text-tertiary); border-bottom:1px solid var(--border);">
-              <th class="text-left py-2 pr-4 font-medium">Timestamp</th>
-              <th class="text-right py-2 px-2 font-medium">Execs/sec</th>
-              <th class="text-right py-2 px-2 font-medium">Corpus</th>
-              ${cHasStability ? '<th class="text-right py-2 px-2 font-medium">Stability</th>' : ""}
-            </tr></thead><tbody>
-            ${c.stats.map(s => `<tr style="border-bottom:1px solid var(--border-subtle);">
-              <td class="py-1.5 pr-4 mono" style="color:var(--text-secondary); font-size:11px;">${s.timestamp}</td>
-              <td class="text-right py-1.5 px-2 mono" style="color:var(--text-primary);">${s.execs_per_sec.toLocaleString()}</td>
-              <td class="text-right py-1.5 px-2 mono" style="color:var(--text-primary);">${s.corpus_count.toLocaleString()}</td>
-              ${cHasStability ? `<td class="text-right py-1.5 px-2 mono" style="color:${s.stability != null ? "var(--text-primary)" : "var(--text-muted)"};">${s.stability != null ? s.stability.toFixed(2) : "-"}</td>` : ""}
-            </tr>`).join("")}
-            </tbody></table></div>
+          <div class="overflow-auto mt-3" style="max-height:400px;"><table class="w-full text-xs">
+            <thead class="sticky top-0" style="background:var(--bg-elevated);"><tr style="color:var(--text-tertiary); border-bottom:1px solid var(--border);">
+              <th class="text-left py-2 pr-4 font-medium cursor-pointer select-none sh-sort" data-col="timestamp">Timestamp <span class="sh-arrow"></span></th>
+              <th class="text-right py-2 px-2 font-medium cursor-pointer select-none sh-sort" data-col="execs_per_sec">Execs/sec <span class="sh-arrow"></span></th>
+              <th class="text-right py-2 px-2 font-medium cursor-pointer select-none sh-sort" data-col="corpus_count">Corpus <span class="sh-arrow"></span></th>
+              ${cHasStability ? '<th class="text-right py-2 px-2 font-medium cursor-pointer select-none sh-sort" data-col="stability">Stability <span class="sh-arrow"></span></th>' : ""}
+            </tr></thead><tbody id="sh-tbody"></tbody></table></div>
         </div>`;
       }
 
@@ -1490,6 +1483,58 @@
       if (cHasStability) {
         const stabData = c.stats.filter(s => s.stability != null).map(s => ({ x: new Date(s.timestamp), y: s.stability }));
         if (stabData.length) createLineChart("chart-c-stability", [{ label: "stability", data: stabData, borderColor: "#f59e0b", backgroundColor: "#f59e0b18", fill: true, tension: 0.3, pointRadius: 3, borderWidth: 1.5 }], "stability");
+      }
+
+      // Stats History sortable table
+      if (c.stats.length > 0) {
+        let shSort = "timestamp";
+        let shDesc = true;
+
+        const shRows = c.stats.map(s => ({
+          timestamp: s.timestamp,
+          execs_per_sec: s.execs_per_sec,
+          corpus_count: s.corpus_count,
+          stability: s.stability != null ? s.stability : null,
+        }));
+
+        function shRender() {
+          const sorted = shRows.slice().sort((a, b) => {
+            let cmp;
+            if (shSort === "timestamp") cmp = a.timestamp.localeCompare(b.timestamp);
+            else {
+              const av = a[shSort] != null ? a[shSort] : -Infinity;
+              const bv = b[shSort] != null ? b[shSort] : -Infinity;
+              cmp = av - bv;
+            }
+            if (cmp === 0) cmp = a.timestamp.localeCompare(b.timestamp);
+            return shDesc ? -cmp : cmp;
+          });
+
+          document.getElementById("sh-tbody").innerHTML = sorted.map(s =>
+            `<tr style="border-bottom:1px solid var(--border-subtle);">
+              <td class="py-1.5 pr-4 mono" style="color:var(--text-secondary); font-size:11px;">${s.timestamp}</td>
+              <td class="text-right py-1.5 px-2 mono" style="color:var(--text-primary);">${s.execs_per_sec.toLocaleString()}</td>
+              <td class="text-right py-1.5 px-2 mono" style="color:var(--text-primary);">${s.corpus_count.toLocaleString()}</td>
+              ${cHasStability ? `<td class="text-right py-1.5 px-2 mono" style="color:${s.stability != null ? "var(--text-primary)" : "var(--text-muted)"};">${s.stability != null ? s.stability.toFixed(2) : "-"}</td>` : ""}
+            </tr>`
+          ).join("");
+
+          for (const th of document.querySelectorAll(".sh-sort")) {
+            const arrow = th.querySelector(".sh-arrow");
+            arrow.textContent = th.dataset.col === shSort ? (shDesc ? "\u25BC" : "\u25B2") : "";
+          }
+        }
+
+        for (const th of document.querySelectorAll(".sh-sort")) {
+          th.addEventListener("click", () => {
+            const col = th.dataset.col;
+            if (shSort === col) shDesc = !shDesc;
+            else { shSort = col; shDesc = col === "timestamp"; }
+            shRender();
+          });
+        }
+
+        shRender();
       }
 
       // Campaign covered files sortable table
