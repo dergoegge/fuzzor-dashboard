@@ -9,6 +9,7 @@ the scraper looks for ``harnesses/<name>/campaigns/<id>/`` containing
 
 import argparse
 import json
+import os
 import sys
 from datetime import datetime, timezone
 from html.parser import HTMLParser
@@ -227,19 +228,51 @@ def main():
             else:
                 all_projects[pname] = pdata
 
-    output = {
-        "scraped_at": datetime.now(timezone.utc).isoformat(),
-        "projects": all_projects,
-    }
+    scraped_at = datetime.now(timezone.utc).isoformat()
+
+    # Write per-harness detail files and build summary index
+    output_dir = os.path.dirname(args.output) or "."
+    data_dir = os.path.join(output_dir, "data")
+
+    index_projects = {}
+    for pname, pdata in all_projects.items():
+        project_data_dir = os.path.join(data_dir, pname)
+        os.makedirs(project_data_dir, exist_ok=True)
+
+        index_harnesses = {}
+        for hname, hdata in pdata["harnesses"].items():
+            # Write full campaign data to per-harness detail file
+            detail_path = os.path.join(project_data_dir, f"{hname}.json")
+            with open(detail_path, "w") as f:
+                json.dump({"campaigns": hdata["campaigns"]}, f)
+
+            # Build lightweight summary for the index
+            summary_campaigns = []
+            for c in hdata["campaigns"]:
+                summary = {
+                    "id": c["id"],
+                    "status": c["status"],
+                    "first_ts": (c["stats"][0]["timestamp"]
+                                 if c["stats"] else None),
+                    "last_ts": (c["stats"][-1]["timestamp"]
+                                if c["stats"] else None),
+                    "stats_count": len(c["stats"]),
+                    "coverage_totals": (c["coverage"]["totals"]
+                                        if c["coverage"] else None),
+                }
+                summary_campaigns.append(summary)
+            index_harnesses[hname] = {"campaigns": summary_campaigns}
+
+        index_projects[pname] = {"harnesses": index_harnesses}
 
     with open(args.output, "w") as f:
-        json.dump(output, f)
+        json.dump({"scraped_at": scraped_at, "projects": index_projects}, f)
 
     total_harnesses = sum(
         len(p["harnesses"]) for p in all_projects.values()
     )
-    print(f"Wrote {args.output} ({len(all_projects)} projects, "
-          f"{total_harnesses} harnesses with campaigns)", file=sys.stderr)
+    print(f"Wrote {args.output} + {data_dir}/ ({len(all_projects)} projects, "
+          f"{total_harnesses} harnesses)", file=sys.stderr)
 
 
 if __name__ == "__main__":

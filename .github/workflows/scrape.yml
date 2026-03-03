@@ -28,6 +28,7 @@ jobs:
         run: |
           mkdir -p publish
           cp data.json index.html publish/
+          cp -r data publish/
 
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4
