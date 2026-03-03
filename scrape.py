@@ -11,6 +11,7 @@ import argparse
 import json
 import os
 import sys
+from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime, timezone
 from html.parser import HTMLParser
 from urllib.request import urlopen
@@ -112,7 +113,39 @@ def campaign_status(campaign_data):
     return "running"
 
 
-def scrape_project(base_url, project):
+def scrape_campaign(campaign_url, cid):
+    """Scrape a single campaign's stats and coverage."""
+    cdata = {"id": cid, "stats": [], "coverage": None}
+    try:
+        cdata["stats"] = parse_stats(fetch(f"{campaign_url}stats.txt"))
+    except URLError:
+        pass
+    try:
+        cov_json = json.loads(fetch(f"{campaign_url}coverage-summary.json"))
+        cdata["coverage"] = parse_coverage(cov_json)
+    except (URLError, json.JSONDecodeError, KeyError, IndexError):
+        pass
+    cdata["status"] = campaign_status(cdata)
+    return cdata
+
+
+def discover_harness_campaigns(harnesses_url, name):
+    """Return (harness_name, [campaign_ids]) for a single harness."""
+    harness_url = f"{harnesses_url}{name}/"
+    try:
+        entries = list_dir(harness_url)
+    except URLError:
+        return name, []
+    if "campaigns" not in entries:
+        return name, []
+    campaigns_url = f"{harness_url}campaigns/"
+    try:
+        return name, list_dir(campaigns_url)
+    except URLError:
+        return name, []
+
+
+def scrape_project(base_url, project, pool):
     """Scrape all harnesses/campaigns for a single project."""
     harnesses_url = f"{base_url}/{project}/harnesses/"
     try:
@@ -120,49 +153,34 @@ def scrape_project(base_url, project):
     except URLError:
         return {}
 
+    # Phase 1: discover campaign IDs for all harnesses in parallel
+    discovery_futures = [
+        pool.submit(discover_harness_campaigns, harnesses_url, n)
+        for n in harness_names
+    ]
+    harness_cids = {}
+    for fut in discovery_futures:
+        name, cids = fut.result()
+        harness_cids[name] = cids
+
+    # Phase 2: scrape all campaigns in parallel
+    campaign_futures = {}
+    for name, cids in harness_cids.items():
+        campaigns_url = f"{harnesses_url}{name}/campaigns/"
+        futs = []
+        for cid in cids:
+            futs.append(
+                pool.submit(scrape_campaign, f"{campaigns_url}{cid}/", cid)
+            )
+        campaign_futures[name] = futs
+
+    # Collect results
     result = {}
     for name in harness_names:
-        harness_url = f"{harnesses_url}{name}/"
-        try:
-            entries = list_dir(harness_url)
-        except URLError:
-            result[name] = {"campaigns": []}
-            continue
-
-        if "campaigns" not in entries:
-            result[name] = {"campaigns": []}
-            continue
-
-        campaigns_url = f"{harness_url}campaigns/"
-        try:
-            campaign_ids = list_dir(campaigns_url)
-        except URLError:
-            result[name] = {"campaigns": []}
-            continue
-
-        campaigns = []
-        for cid in campaign_ids:
-            campaign_url = f"{campaigns_url}{cid}/"
-            cdata = {"id": cid, "stats": [], "coverage": None}
-
-            try:
-                cdata["stats"] = parse_stats(fetch(f"{campaign_url}stats.txt"))
-            except URLError:
-                pass
-
-            try:
-                cov_json = json.loads(fetch(f"{campaign_url}coverage-summary.json"))
-                cdata["coverage"] = parse_coverage(cov_json)
-            except (URLError, json.JSONDecodeError, KeyError, IndexError):
-                pass
-
-            cdata["status"] = campaign_status(cdata)
-            campaigns.append(cdata)
-
+        campaigns = [f.result() for f in campaign_futures.get(name, [])]
         campaigns.sort(
             key=lambda c: c["stats"][0]["timestamp"] if c["stats"] else ""
         )
-
         result[name] = {"campaigns": campaigns}
         total_pts = sum(len(c["stats"]) for c in campaigns)
         print(f"    {name}: {len(campaigns)} campaign(s), "
@@ -171,7 +189,7 @@ def scrape_project(base_url, project):
     return result
 
 
-def scrape_endpoint(endpoint, only_projects=None):
+def scrape_endpoint(endpoint, only_projects=None, pool=None):
     """Discover projects at *endpoint* and scrape each one.
 
     If *only_projects* is given, only scrape projects whose names are in the set.
@@ -190,7 +208,7 @@ def scrape_endpoint(endpoint, only_projects=None):
             continue
         # Each top-level directory is a project
         print(f"  Project: {entry}", file=sys.stderr)
-        harness_data = scrape_project(endpoint, entry)
+        harness_data = scrape_project(endpoint, entry, pool)
         if entry in projects:
             projects[entry]["harnesses"].update(harness_data)
         else:
@@ -215,18 +233,25 @@ def main():
         "-p", "--projects", nargs="+", metavar="NAME",
         help="Only scrape these projects (default: all discovered projects)",
     )
+    parser.add_argument(
+        "-w", "--workers", type=int, default=32,
+        help="Number of parallel fetch threads (default: 32)",
+    )
     args = parser.parse_args()
 
     all_projects = {}
-    for endpoint in args.endpoints:
-        print(f"Scraping {endpoint}", file=sys.stderr)
-        only = set(args.projects) if args.projects else None
-        projects = scrape_endpoint(endpoint, only_projects=only)
-        for pname, pdata in projects.items():
-            if pname in all_projects:
-                all_projects[pname]["harnesses"].update(pdata["harnesses"])
-            else:
-                all_projects[pname] = pdata
+    with ThreadPoolExecutor(max_workers=args.workers) as pool:
+        for endpoint in args.endpoints:
+            print(f"Scraping {endpoint}", file=sys.stderr)
+            only = set(args.projects) if args.projects else None
+            projects = scrape_endpoint(endpoint, only_projects=only,
+                                       pool=pool)
+            for pname, pdata in projects.items():
+                if pname in all_projects:
+                    all_projects[pname]["harnesses"].update(
+                        pdata["harnesses"])
+                else:
+                    all_projects[pname] = pdata
 
     scraped_at = datetime.now(timezone.utc).isoformat()
 
