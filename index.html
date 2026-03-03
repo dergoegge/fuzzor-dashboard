@@ -438,14 +438,35 @@
       const el = document.getElementById(id);
       if (!el) return;
       const t = tc();
+      const visibleDS = datasets.filter(d => d.label !== "min" && d.label !== "max");
       const ch = new Chart(el, {
         type: "line", data: { datasets },
         options: {
           responsive: true, maintainAspectRatio: false,
           interaction: { mode: "index", intersect: false },
           plugins: {
-            legend: { display: datasets.length > 1, labels: { color: t.legend, font: { size: 10, family: "Inter" } } },
-            tooltip: { backgroundColor: t.tooltipBg, titleColor: t.text, bodyColor: t.textSec, borderColor: t.tooltipBorder, borderWidth: 1, titleFont: { family: "Inter" }, bodyFont: { family: "Inter" } },
+            legend: { display: visibleDS.length > 1, labels: { color: t.legend, font: { size: 10, family: "Inter" }, filter: (item) => item.text !== "min" && item.text !== "max" } },
+            tooltip: {
+              backgroundColor: t.tooltipBg, titleColor: t.text, bodyColor: t.textSec, borderColor: t.tooltipBorder, borderWidth: 1, titleFont: { family: "Inter" }, bodyFont: { family: "Inter" },
+              filter: (item) => item.dataset.label !== "min" && item.dataset.label !== "max",
+              callbacks: {
+                label: function(ctx) {
+                  const ds = ctx.chart.data.datasets;
+                  const idx = ctx.dataIndex;
+                  const label = ctx.dataset.label;
+                  const val = ctx.parsed.y;
+                  const fmt = v => typeof v === "number" ? v.toLocaleString(undefined, { maximumFractionDigits: 2 }) : v;
+                  const minDS = ds.find(d => d.label === "min");
+                  const maxDS = ds.find(d => d.label === "max");
+                  if (minDS && maxDS && minDS.data[idx] && maxDS.data[idx]) {
+                    const minVal = minDS.data[idx].y;
+                    const maxVal = maxDS.data[idx].y;
+                    return `${label}: ${fmt(val)}  (min: ${fmt(minVal)}, max: ${fmt(maxVal)})`;
+                  }
+                  return `${label}: ${fmt(val)}`;
+                }
+              },
+            },
           },
           scales: {
             x: { type: "time", time: { tooltipFormat: "yyyy-MM-dd HH:mm:ss" }, grid: { color: t.grid }, ticks: { color: t.tick, font: { size: 10, family: "Inter" }, maxRotation: 0 } },
@@ -485,11 +506,22 @@
     function makeStatsDS(campaigns, field) {
       const pts = [];
       for (const c of campaigns) {
-        for (const s of c.stats) pts.push({ x: new Date(s.timestamp), y: s[field] });
+        if (!c.stats.length) continue;
+        const vals = c.stats.map(s => s[field]);
+        const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+        const min = Math.min(...vals);
+        const max = Math.max(...vals);
+        const t = new Date(c.stats[c.stats.length - 1].timestamp);
+        pts.push({ x: t, avg, min, max });
       }
       pts.sort((a, b) => a.x - b.x);
       const color = field === "execs_per_sec" ? "#3b82f6" : "#10b981";
-      return [{ label: field === "execs_per_sec" ? "execs/sec" : "corpus count", data: pts, borderColor: color, backgroundColor: color + "18", fill: true, tension: 0, pointRadius: 1.5, borderWidth: 1.5 }];
+      const label = field === "execs_per_sec" ? "avg execs/sec" : "avg corpus count";
+      return [
+        { label: "min", data: pts.map(p => ({ x: p.x, y: p.min })), borderColor: color + "00", backgroundColor: "transparent", pointRadius: 0, borderWidth: 0, fill: false },
+        { label: "max", data: pts.map(p => ({ x: p.x, y: p.max })), borderColor: color + "00", backgroundColor: color + "15", pointRadius: 0, borderWidth: 0, fill: "-1" },
+        { label, data: pts.map(p => ({ x: p.x, y: p.avg })), borderColor: color, backgroundColor: color + "18", fill: false, tension: 0, pointRadius: 4, borderWidth: 2 },
+      ];
     }
 
     function hasStability(campaigns) {
@@ -499,13 +531,22 @@
     function makeStabilityDS(campaigns) {
       const pts = [];
       for (const c of campaigns) {
-        for (const s of c.stats) {
-          if (s.stability != null) pts.push({ x: new Date(s.timestamp), y: s.stability });
-        }
+        const vals = c.stats.filter(s => s.stability != null).map(s => s.stability);
+        if (!vals.length || !c.stats.length) continue;
+        const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+        const min = Math.min(...vals);
+        const max = Math.max(...vals);
+        const t = new Date(c.stats[c.stats.length - 1].timestamp);
+        pts.push({ x: t, avg, min, max });
       }
       if (!pts.length) return null;
       pts.sort((a, b) => a.x - b.x);
-      return [{ label: "stability", data: pts, borderColor: "#f59e0b", backgroundColor: "#f59e0b18", fill: true, tension: 0, pointRadius: 1.5, borderWidth: 1.5 }];
+      const color = "#f59e0b";
+      return [
+        { label: "min", data: pts.map(p => ({ x: p.x, y: p.min })), borderColor: color + "00", backgroundColor: "transparent", pointRadius: 0, borderWidth: 0, fill: false },
+        { label: "max", data: pts.map(p => ({ x: p.x, y: p.max })), borderColor: color + "00", backgroundColor: color + "15", pointRadius: 0, borderWidth: 0, fill: "-1" },
+        { label: "avg stability", data: pts.map(p => ({ x: p.x, y: p.avg })), borderColor: color, backgroundColor: color + "18", fill: false, tension: 0, pointRadius: 4, borderWidth: 2 },
+      ];
     }
 
     function makeCovDS(campaigns) {
