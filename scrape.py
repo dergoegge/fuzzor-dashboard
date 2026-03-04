@@ -274,6 +274,13 @@ def main():
             # Build lightweight summary for the index
             summary_campaigns = []
             for c in hdata["campaigns"]:
+                avg_execs = None
+                avg_stability = None
+                if c["stats"]:
+                    avg_execs = sum(s["execs_per_sec"] for s in c["stats"]) / len(c["stats"])
+                    stab_vals = [s["stability"] for s in c["stats"] if "stability" in s and s["stability"] is not None]
+                    if stab_vals:
+                        avg_stability = sum(stab_vals) / len(stab_vals)
                 summary = {
                     "id": c["id"],
                     "status": c["status"],
@@ -284,6 +291,8 @@ def main():
                     "stats_count": len(c["stats"]),
                     "coverage_totals": (c["coverage"]["totals"]
                                         if c["coverage"] else None),
+                    "avg_execs_per_sec": avg_execs,
+                    "avg_stability": avg_stability,
                 }
                 summary_campaigns.append(summary)
             index_harnesses[hname] = {"campaigns": summary_campaigns}
