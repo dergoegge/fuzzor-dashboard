@@ -22,7 +22,7 @@
       --bg-overlay: #1c1c21;
       --bg-input: #111114;
       --border: #1e1e23;
-      --border-subtle: #16161a;
+      --border-subtle: #26262c;
       --text-primary: #e4e4e8;
       --text-secondary: #85858f;
       --text-tertiary: #55555f;
@@ -1104,7 +1104,7 @@
             if (r.covDelta) {
               const d = r.covDelta;
               const fmt = v => (v > 0 ? "+" : "") + v.toFixed(3) + "%";
-              const col = v => v > 0 ? "var(--green)" : v < 0 ? "var(--red)" : "var(--text-muted)";
+              const col = v => v > 0.01 ? "var(--green)" : v < -0.01 ? "var(--red)" : "var(--text-tertiary)";
               covStr = `<span style="color:${col(d.lines)};">${fmt(d.lines)}</span>/<span style="color:${col(d.branches)};">${fmt(d.branches)}</span>/<span style="color:${col(d.functions)};">${fmt(d.functions)}</span>/<span style="color:${col(d.regions)};">${fmt(d.regions)}</span>`;
             }
             return `<tr class="ac-row campaign-row cursor-pointer" style="border-bottom:1px solid var(--border-subtle);" data-harness="${r.harness}" data-cid="${r.id}">
@@ -1320,7 +1320,7 @@
           const d = campaignDeltas[i];
           function deltaCell(val) {
             if (d === null) return `<td class="text-right py-1.5 px-2 mono" style="color:var(--text-muted);">-</td>`;
-            const col = val > 0 ? "var(--green)" : val < 0 ? "var(--red)" : "var(--text-muted)";
+            const col = val > 0.01 ? "var(--green)" : val < -0.01 ? "var(--red)" : "var(--text-tertiary)";
             const str = (val > 0 ? "+" : "") + val.toFixed(2) + "%";
             return `<td class="text-right py-1.5 px-2 mono font-medium" style="color:${col};">${str}</td>`;
           }
@@ -1384,7 +1384,7 @@
 
           document.getElementById("cft-tbody").innerHTML = sorted.map(r => {
             const deltaStr = r.change !== null ? (r.change > 0 ? "+" : "") + r.change.toFixed(1) + "%" : "";
-            const deltaColor = r.change === null ? "" : r.change > 0 ? "var(--green)" : r.change < 0 ? "var(--red)" : "var(--text-muted)";
+            const deltaColor = r.change === null ? "" : r.change > 0 ? "var(--green)" : r.change < 0 ? "var(--red)" : "var(--text-tertiary)";
             return `<tr class="cov-file-row cursor-pointer" style="border-bottom:1px solid var(--border-subtle);" data-filename="${r.file.replace(/"/g, '&quot;')}">
               <td class="py-1.5 pr-4 mono truncate max-w-md" style="color:var(--text-secondary);">${r.short}</td>
               <td class="text-right py-1.5 px-2" style="color:var(--text-tertiary);">${r.lines}</td>
