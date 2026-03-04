@@ -885,6 +885,8 @@
               <th class="text-right py-2 px-2 font-medium cursor-pointer select-none hso-sort" data-col="running">Running <span class="hso-arrow"></span></th>
               <th class="text-right py-2 px-2 font-medium cursor-pointer select-none hso-sort" data-col="completed">Completed <span class="hso-arrow"></span></th>
               <th class="text-right py-2 px-2 font-medium cursor-pointer select-none hso-sort" data-col="stopped">Stopped <span class="hso-arrow"></span></th>
+              <th class="text-right py-2 px-2 font-medium cursor-pointer select-none hso-sort" data-col="avgExecs">Avg Execs/s <span class="hso-arrow"></span></th>
+              <th class="text-right py-2 px-2 font-medium cursor-pointer select-none hso-sort" data-col="avgStability">Avg Stability <span class="hso-arrow"></span></th>
               <th class="text-right py-2 px-2 font-medium cursor-pointer select-none hso-sort" data-col="lastCompleted">Last Completed <span class="hso-arrow"></span></th>
             </tr></thead><tbody id="hso-tbody"></tbody></table></div>
         </div>`;
@@ -950,7 +952,11 @@
               if (c.last_ts > lastCompleted) lastCompleted = c.last_ts;
             }
           }
-          return { name: n, campaigns: cs.length, running: r, completed: co, stopped: s, lastCompleted };
+          const execVals = cs.map(c => c.avg_execs_per_sec).filter(v => v != null);
+          const avgExecs = execVals.length ? execVals.reduce((a, b) => a + b, 0) / execVals.length : null;
+          const stabVals = cs.map(c => c.avg_stability).filter(v => v != null);
+          const avgStability = stabVals.length ? stabVals.reduce((a, b) => a + b, 0) / stabVals.length : null;
+          return { name: n, campaigns: cs.length, running: r, completed: co, stopped: s, avgExecs, avgStability, lastCompleted };
         });
 
         function hsoRender() {
@@ -966,7 +972,10 @@
             let cmp;
             if (hsoSort === "name") cmp = a.name.localeCompare(b.name);
             else if (hsoSort === "lastCompleted") cmp = a.lastCompleted.localeCompare(b.lastCompleted);
-            else cmp = a[hsoSort] - b[hsoSort];
+            else if (hsoSort === "avgExecs" || hsoSort === "avgStability") {
+              const av = a[hsoSort] ?? -Infinity, bv = b[hsoSort] ?? -Infinity;
+              cmp = av - bv;
+            } else cmp = a[hsoSort] - b[hsoSort];
             if (cmp === 0) cmp = a.name.localeCompare(b.name);
             return hsoDesc ? -cmp : cmp;
           });
@@ -974,12 +983,16 @@
           const tbody = document.getElementById("hso-tbody");
           tbody.innerHTML = sorted.map(r => {
             const lcDisplay = r.lastCompleted ? new Date(r.lastCompleted).toLocaleString() : "-";
+            const execDisplay = r.avgExecs != null ? Math.round(r.avgExecs).toLocaleString() : "-";
+            const stabDisplay = r.avgStability != null ? r.avgStability.toFixed(2) : "-";
             return `<tr style="border-bottom:1px solid var(--border-subtle);">
             <td class="py-1.5 pr-4" style="color:var(--text-secondary);">${r.name}</td>
             <td class="text-right py-1.5 px-2 font-medium" style="color:var(--text-primary);">${r.campaigns}</td>
             <td class="text-right py-1.5 px-2" style="color:${r.running ? "var(--green)" : "var(--text-muted)"};">${r.running}</td>
             <td class="text-right py-1.5 px-2" style="color:${r.completed ? "var(--blue)" : "var(--text-muted)"};">${r.completed}</td>
             <td class="text-right py-1.5 px-2" style="color:${r.stopped ? "var(--yellow)" : "var(--text-muted)"};">${r.stopped}</td>
+            <td class="text-right py-1.5 px-2 mono" style="color:${r.avgExecs != null ? "var(--text-primary)" : "var(--text-muted)"};">${execDisplay}</td>
+            <td class="text-right py-1.5 px-2 mono" style="color:${r.avgStability != null ? "var(--text-primary)" : "var(--text-muted)"};">${stabDisplay}</td>
             <td class="text-right py-1.5 px-2 mono" style="color:${r.lastCompleted ? "var(--text-secondary)" : "var(--text-muted)"}; font-size:11px;">${lcDisplay}</td>
           </tr>`;}).join("");
 
