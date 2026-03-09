@@ -1078,6 +1078,7 @@
         }
 
         let acFilter = "all";
+        let acCovFilter = false;
         let acSort = "lastTs";
         let acDesc = true;
 
@@ -1086,6 +1087,9 @@
           let filtered = acRows;
           if (acFilter !== "all") filtered = filtered.filter(r => r.status === acFilter);
           if (q) filtered = filtered.filter(r => r.harness.toLowerCase().includes(q) || r.id.toLowerCase().includes(q));
+          if (acCovFilter) {
+            filtered = filtered.filter(r => r.covDelta && (Math.abs(r.covDelta.lines) > 0.01 || Math.abs(r.covDelta.branches) > 0.01 || Math.abs(r.covDelta.functions) > 0.01 || Math.abs(r.covDelta.regions) > 0.01));
+          }
 
           const sorted = filtered.slice().sort((a, b) => {
             let cmp;
@@ -1136,6 +1140,7 @@
         // Filters
         const acFilterCounts = { all: acRows.length, running: 0, completed: 0, stopped: 0 };
         for (const r of acRows) acFilterCounts[r.status] = (acFilterCounts[r.status] || 0) + 1;
+        const acSigDeltaCount = acRows.filter(r => r.covDelta && (Math.abs(r.covDelta.lines) > 0.01 || Math.abs(r.covDelta.branches) > 0.01 || Math.abs(r.covDelta.functions) > 0.01 || Math.abs(r.covDelta.regions) > 0.01)).length;
         const acFiltersEl = document.getElementById("ac-filters");
         const acFilterDefs = [
           { key: "all", label: "All" }, { key: "running", label: "Running" },
@@ -1150,6 +1155,16 @@
             btn.className = `pill ${active ? "active" : ""}`;
             btn.textContent = `${f.label} ${acFilterCounts[f.key]}`;
             btn.addEventListener("click", () => { acFilter = f.key; acRenderFilters(); acRender(); });
+            acFiltersEl.appendChild(btn);
+          }
+          if (acSigDeltaCount > 0) {
+            const sep = document.createElement("span");
+            sep.style.cssText = "width:1px; height:16px; background:var(--border); align-self:center;";
+            acFiltersEl.appendChild(sep);
+            const btn = document.createElement("button");
+            btn.className = `pill ${acCovFilter ? "active" : ""}`;
+            btn.textContent = `\u0394cov ${acSigDeltaCount}`;
+            btn.addEventListener("click", () => { acCovFilter = !acCovFilter; acRenderFilters(); acRender(); });
             acFiltersEl.appendChild(btn);
           }
         }
