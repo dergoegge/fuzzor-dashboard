@@ -5,126 +5,174 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fuzzor Dashboard</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3"></script>
   <style>
     :root {
-      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', monospace;
+      --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', 'Cascadia Code', monospace;
     }
 
     [data-theme="dark"] {
-      --bg-base: #09090b;
-      --bg-surface: #0f0f12;
-      --bg-elevated: #16161a;
-      --bg-overlay: #1c1c21;
-      --bg-input: #111114;
-      --border: #1e1e23;
-      --border-subtle: #26262c;
-      --text-primary: #e4e4e8;
-      --text-secondary: #85858f;
-      --text-tertiary: #55555f;
-      --text-muted: #35353d;
-      --accent: #3b82f6;
-      --accent-dim: rgba(59,130,246,0.10);
-      --accent-hover: rgba(59,130,246,0.06);
-      --hover: rgba(255,255,255,0.025);
-      --active-bg: rgba(59,130,246,0.08);
-      --active-border: #3b82f6;
-      --green: #22c55e;
-      --green-dim: rgba(34,197,94,0.10);
-      --yellow: #eab308;
-      --yellow-dim: rgba(234,179,8,0.10);
-      --blue: #3b82f6;
-      --blue-dim: rgba(59,130,246,0.10);
-      --red: #ef4444;
-      --chart-grid: #141418;
-      --chart-tooltip-bg: #16161a;
-      --chart-tooltip-border: #1e1e23;
-      --chart-tick: #55555f;
-      --chart-legend: #85858f;
-      --scrollbar-track: #0f0f12;
-      --scrollbar-thumb: #2a2a30;
+      --bg-base: #0a0a0a;
+      --bg-surface: #0e0e0e;
+      --bg-elevated: #121212;
+      --bg-overlay: #181818;
+      --bg-input: #0e0e0e;
+      --border: #333333;
+      --border-subtle: #222222;
+      --text-primary: #cccccc;
+      --text-secondary: #888888;
+      --text-tertiary: #555555;
+      --text-muted: #333333;
+      --accent: #33ff99;
+      --accent-dim: rgba(51,255,153,0.08);
+      --accent-hover: rgba(51,255,153,0.04);
+      --hover: rgba(51,255,153,0.04);
+      --active-bg: rgba(51,255,153,0.06);
+      --active-border: #33ff99;
+      --green: #33ff99;
+      --green-dim: rgba(51,255,153,0.10);
+      --yellow: #ffcc00;
+      --yellow-dim: rgba(255,204,0,0.10);
+      --blue: #66aaff;
+      --blue-dim: rgba(102,170,255,0.10);
+      --red: #ff4444;
+      --chart-grid: #1a1a1a;
+      --chart-tooltip-bg: #121212;
+      --chart-tooltip-border: #333333;
+      --chart-tick: #555555;
+      --chart-legend: #888888;
+      --scrollbar-track: #0e0e0e;
+      --scrollbar-thumb: #333333;
+      --tui-border-color: #444444;
+      --tui-title-bg: #1a1a1a;
+      --tui-highlight: #33ff99;
+      --scanline-color: rgba(0,0,0,0.03);
     }
 
     [data-theme="light"] {
-      --bg-base: #f4f4f6;
-      --bg-surface: #ffffff;
-      --bg-elevated: #ffffff;
-      --bg-overlay: #f0f0f3;
-      --bg-input: #f4f4f6;
-      --border: #e2e2e7;
-      --border-subtle: #ebebef;
-      --text-primary: #18181b;
-      --text-secondary: #6e6e78;
-      --text-tertiary: #a0a0aa;
-      --text-muted: #ccccdd;
-      --accent: #2563eb;
-      --accent-dim: rgba(37,99,235,0.07);
-      --accent-hover: rgba(37,99,235,0.04);
-      --hover: rgba(0,0,0,0.025);
-      --active-bg: rgba(37,99,235,0.06);
-      --active-border: #2563eb;
-      --green: #16a34a;
-      --green-dim: rgba(22,163,74,0.08);
-      --yellow: #ca8a04;
-      --yellow-dim: rgba(202,138,4,0.08);
-      --blue: #2563eb;
-      --blue-dim: rgba(37,99,235,0.08);
-      --red: #dc2626;
-      --chart-grid: #ebebef;
-      --chart-tooltip-bg: #ffffff;
-      --chart-tooltip-border: #e2e2e7;
-      --chart-tick: #a0a0aa;
-      --chart-legend: #6e6e78;
-      --scrollbar-track: #f0f0f3;
-      --scrollbar-thumb: #ccccdd;
+      --bg-base: #e8e8e8;
+      --bg-surface: #d8d8d8;
+      --bg-elevated: #d0d0d0;
+      --bg-overlay: #c8c8c8;
+      --bg-input: #d8d8d8;
+      --border: #999999;
+      --border-subtle: #aaaaaa;
+      --text-primary: #111111;
+      --text-secondary: #444444;
+      --text-tertiary: #777777;
+      --text-muted: #aaaaaa;
+      --accent: #006633;
+      --accent-dim: rgba(0,102,51,0.08);
+      --accent-hover: rgba(0,102,51,0.04);
+      --hover: rgba(0,102,51,0.06);
+      --active-bg: rgba(0,102,51,0.08);
+      --active-border: #006633;
+      --green: #006633;
+      --green-dim: rgba(0,102,51,0.10);
+      --yellow: #996600;
+      --yellow-dim: rgba(153,102,0,0.10);
+      --blue: #003399;
+      --blue-dim: rgba(0,51,153,0.10);
+      --red: #cc0000;
+      --chart-grid: #bbbbbb;
+      --chart-tooltip-bg: #d0d0d0;
+      --chart-tooltip-border: #999999;
+      --chart-tick: #777777;
+      --chart-legend: #444444;
+      --scrollbar-track: #d0d0d0;
+      --scrollbar-thumb: #999999;
+      --tui-border-color: #aaaaaa;
+      --tui-title-bg: #c8c8c8;
+      --tui-highlight: #006633;
+      --scanline-color: rgba(0,0,0,0.01);
     }
 
-    * { font-family: var(--font-sans); }
+    * { font-family: var(--font-mono); font-size: 13px; }
     code, .mono { font-family: var(--font-mono); }
     body { background: var(--bg-base); color: var(--text-primary); }
 
-    .harness-item { transition: background 0.1s; }
+    .harness-item { transition: none; }
     .harness-item:hover { background: var(--hover); }
     .harness-item.active { background: var(--active-bg); border-left-color: var(--active-border); }
-    .project-tab.active { background: var(--accent); color: #fff; }
+    .project-tab.active { background: var(--accent); color: #000; }
     .coverage-bar-bg { background: var(--bg-overlay); }
-    .coverage-bar-fill { transition: width 0.5s ease; }
+    .coverage-bar-fill { transition: none; }
 
-    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: var(--scrollbar-track); }
-    ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb { background: var(--scrollbar-thumb); border-radius: 0; }
 
-    @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-    .status-running { animation: pulse-dot 2s ease-in-out infinite; }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+    .status-running { animation: blink 1s step-end infinite; }
 
-    /* Shared component styles */
-    .card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px; }
-    .input { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-primary); border-radius: 6px; }
+    /* TUI-style card with box-drawing borders */
+    .card {
+      background: var(--bg-elevated);
+      border: 1px solid var(--tui-border-color);
+      border-radius: 0;
+      position: relative;
+    }
+    .input { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-primary); border-radius: 0; }
     .input::placeholder { color: var(--text-tertiary); }
     .input:focus { outline: none; border-color: var(--accent); }
-    .pill { border-radius: 4px; font-size: 11px; padding: 2px 8px; border: 1px solid var(--border); background: var(--bg-overlay); color: var(--text-secondary); cursor: pointer; transition: all 0.1s; }
-    .pill:hover { border-color: var(--text-tertiary); }
+    .pill { border-radius: 0; font-size: 12px; padding: 1px 6px; border: 1px solid var(--border); background: var(--bg-overlay); color: var(--text-secondary); cursor: pointer; transition: none; }
+    .pill:hover { border-color: var(--text-tertiary); color: var(--text-primary); }
     .pill.active { background: var(--accent-dim); color: var(--accent); border-color: var(--accent); }
-    .section-label { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-tertiary); }
-    .btn-sm { padding: 3px 10px; font-size: 11px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-overlay); color: var(--text-secondary); cursor: pointer; transition: all 0.1s; }
+    .section-label { font-size: 12px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: var(--accent); }
+    .section-label::before { content: "── "; color: var(--tui-border-color); }
+    .section-label::after { content: " ──"; color: var(--tui-border-color); }
+    .btn-sm { padding: 2px 8px; font-size: 12px; border-radius: 0; border: 1px solid var(--border); background: var(--bg-overlay); color: var(--text-secondary); cursor: pointer; transition: none; }
     .btn-sm:hover { border-color: var(--text-tertiary); }
-    .btn-sm.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+    .btn-sm.active { background: var(--accent); color: #000; border-color: var(--accent); }
 
     table th { font-weight: 500; }
 
-    .theme-toggle { background: none; border: 1px solid var(--border); border-radius: 6px; padding: 5px 7px; cursor: pointer; color: var(--text-secondary); transition: all 0.15s; display: flex; align-items: center; }
-    .theme-toggle:hover { border-color: var(--text-tertiary); color: var(--text-primary); }
+    .theme-toggle { background: none; border: 1px solid var(--border); border-radius: 0; padding: 4px 6px; cursor: pointer; color: var(--text-secondary); transition: none; display: flex; align-items: center; }
+    .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
 
-    .campaign-row { transition: background 0.1s; }
+    .campaign-row { transition: none; }
     .campaign-row:hover { background: var(--hover); }
-    .cov-file-row { transition: background 0.1s; }
+    .cov-file-row { transition: none; }
     .cov-file-row:hover { background: var(--hover); }
-    .hover-link { transition: color 0.1s; }
+    .hover-link { transition: none; }
     .hover-link:hover { color: var(--accent); }
+
+    /* TUI top bar */
+    .tui-topbar {
+      background: var(--tui-title-bg);
+      border-bottom: 1px solid var(--tui-border-color);
+      color: var(--accent);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    /* Block-character coverage bar */
+    .cov-bar-tui {
+      letter-spacing: -0.05em;
+      line-height: 1;
+    }
+
+    /* Scanline overlay for extra CRT feel */
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 9999;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        var(--scanline-color) 2px,
+        var(--scanline-color) 4px
+      );
+    }
+
+    /* Selection color */
+    ::selection { background: var(--accent); color: #000; }
 
     /* Mobile sidebar */
     #sidebar-toggle { display: none; }
@@ -134,7 +182,7 @@
       #sidebar-toggle { display: flex; }
       aside { position: fixed !important; left: 0; top: 0; bottom: 0; z-index: 40; transform: translateX(-100%); transition: transform 0.2s ease; }
       aside.open { transform: translateX(0); }
-      #sidebar-overlay { position: fixed; inset: 0; z-index: 30; background: rgba(0,0,0,0.5); }
+      #sidebar-overlay { position: fixed; inset: 0; z-index: 30; background: rgba(0,0,0,0.7); }
       #sidebar-overlay.open { display: block; }
       main { padding: 1rem; padding-top: 3.5rem; min-width: 0; width: 100vw; }
     }
@@ -143,35 +191,35 @@
 <body class="min-h-screen flex">
 
   <!-- Mobile toggle -->
-  <button id="sidebar-toggle" class="fixed top-3 left-3 z-50 items-center justify-center w-9 h-9 rounded-lg" style="background:var(--bg-surface); border:1px solid var(--border); color:var(--text-secondary);">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+  <button id="sidebar-toggle" class="fixed top-2 left-2 z-50 items-center justify-center w-8 h-8" style="background:var(--bg-surface); border:1px solid var(--border); color:var(--accent); font-size:14px;">
+    &#9776;
   </button>
   <div id="sidebar-overlay"></div>
 
   <!-- Sidebar -->
-  <aside style="width:280px; background:var(--bg-surface); border-right:1px solid var(--border);" class="flex flex-col h-screen sticky top-0 flex-shrink-0">
-    <div style="border-bottom:1px solid var(--border);" class="p-4 cursor-pointer flex items-center justify-between" id="sidebar-title">
+  <aside style="width:280px; background:var(--bg-surface); border-right:1px solid var(--tui-border-color);" class="flex flex-col h-screen sticky top-0 flex-shrink-0">
+    <div class="tui-topbar px-3 py-2 cursor-pointer flex items-center justify-between" id="sidebar-title">
       <div>
-        <h1 class="text-sm font-semibold" style="color:var(--text-primary);">Fuzzor</h1>
-        <p class="text-[11px] mt-0.5" style="color:var(--text-tertiary);" id="subtitle">Campaign Explorer</p>
+        <h1 class="text-sm font-bold" style="color:var(--accent);">[ FUZZOR ]</h1>
+        <p class="text-xs mt-0.5" style="color:var(--text-tertiary);" id="subtitle">campaign explorer</p>
       </div>
       <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
-        <svg id="theme-icon-dark" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-        <svg id="theme-icon-light" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <span id="theme-icon-dark" style="font-size:12px;">&#9788;</span>
+        <span id="theme-icon-light" style="font-size:12px; display:none;">&#9790;</span>
       </button>
     </div>
 
     <!-- Project selector -->
-    <div id="project-tabs" style="border-bottom:1px solid var(--border);" class="p-3 flex flex-wrap gap-1.5"></div>
+    <div id="project-tabs" style="border-bottom:1px solid var(--tui-border-color);" class="p-2 flex flex-wrap gap-1"></div>
 
-    <div class="p-3 pb-1">
-      <input id="search" type="text" placeholder="Search harnesses..."
-        class="input w-full px-2.5 py-1.5 text-xs">
+    <div class="p-2 pb-1">
+      <input id="search" type="text" placeholder="/ search..."
+        class="input w-full px-2 py-1 text-xs">
     </div>
-    <div class="px-3 py-1.5 flex flex-wrap gap-1" id="filter-bar"></div>
-    <div class="px-3 pb-2 flex items-center gap-1.5">
-      <span class="section-label">Sort</span>
-      <select id="sort-select" class="input flex-1 px-1.5 py-0.5 text-[11px]">
+    <div class="px-2 py-1 flex flex-wrap gap-1" id="filter-bar"></div>
+    <div class="px-2 pb-2 flex items-center gap-1.5">
+      <span class="text-xs" style="color:var(--text-tertiary);">sort:</span>
+      <select id="sort-select" class="input flex-1 px-1.5 py-0.5 text-xs">
         <option value="name">Name</option>
         <option value="campaigns">Campaign count</option>
         <option value="running">Running count</option>
@@ -180,10 +228,10 @@
       </select>
     </div>
     <div id="harness-list" class="flex-1 overflow-y-auto min-h-0">
-      <div class="p-4 text-xs" style="color:var(--text-tertiary);">Loading...</div>
+      <div class="p-2 text-xs" style="color:var(--text-tertiary);">loading...</div>
     </div>
-    <div class="p-3 text-[11px]" style="border-top:1px solid var(--border); color:var(--text-tertiary);">
-      <span id="harness-count">0</span> harnesses &middot; scraped <span id="scraped-at">-</span>
+    <div class="px-2 py-1.5 text-xs" style="border-top:1px solid var(--tui-border-color); color:var(--text-tertiary);">
+      [<span id="harness-count">0</span> harnesses] scraped <span id="scraped-at">-</span>
     </div>
   </aside>
 
@@ -191,10 +239,14 @@
   <main class="flex-1 p-6 overflow-y-auto min-h-screen" style="background:var(--bg-base);">
     <div id="placeholder" class="flex items-center justify-center h-full">
       <div class="text-center" style="color:var(--text-tertiary);">
-        <svg class="mx-auto mb-4 w-12 h-12" style="color:var(--text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-        </svg>
-        <p class="text-sm">Select a harness to view campaigns</p>
+        <pre class="mb-4" style="color:var(--text-muted); font-size:11px; line-height:1.2;">
+  ┌─────────────────┐
+  │  ▓▓░░  ▓▓▓░  ▓░ │
+  │  ▓▓▓░  ▓▓░░  ▓▓ │
+  │  ▓░░░  ▓▓▓▓  ▓▓ │
+  └─────────────────┘
+        </pre>
+        <p class="text-xs">&lt; select a harness to view campaigns &gt;</p>
       </div>
     </div>
     <div id="content" class="hidden"></div>
@@ -339,8 +391,8 @@
 
     // ── Helpers / constants ───────────────────────────────────────────
     const CAMPAIGN_COLORS = [
-      "#3b82f6","#10b981","#f59e0b","#ef4444","#8b5cf6",
-      "#ec4899","#14b8a6","#f97316","#6366f1","#84cc16",
+      "#66aaff","#33ff99","#ffcc00","#ff4444","#cc66ff",
+      "#ff66aa","#33cccc","#ff9933","#6699ff","#99ff33",
     ];
     const STATUS_CFG = {
       running:   { label:"Running",   dot:"status-running" },
@@ -350,36 +402,38 @@
     const STATUS_COLORS = { running: "var(--green)", stopped: "var(--yellow)", completed: "var(--blue)" };
     const STATUS_DIM = { running: "var(--green-dim)", stopped: "var(--yellow-dim)", completed: "var(--blue-dim)" };
 
+    const STATUS_CHARS = { running: "*", stopped: "-", completed: "+" };
     function statusBadge(s) {
       const cfg = STATUS_CFG[s] || STATUS_CFG.stopped;
       const col = STATUS_COLORS[s] || STATUS_COLORS.stopped;
-      const dim = STATUS_DIM[s] || STATUS_DIM.stopped;
-      return `<span class="inline-flex items-center gap-1.5 text-[11px] font-medium px-2 py-0.5 rounded" style="background:${dim};color:${col};"><span class="w-1.5 h-1.5 rounded-full ${cfg.dot}" style="background:${col};"></span>${cfg.label}</span>`;
+      const ch = STATUS_CHARS[s] || "-";
+      return `<span class="inline-flex items-center text-xs font-medium whitespace-nowrap" style="color:${col};">[<span class="${cfg.dot}">${ch}</span>] ${cfg.label}</span>`;
     }
     function statusDot(s) {
-      const cfg = STATUS_CFG[s] || STATUS_CFG.stopped;
       const col = STATUS_COLORS[s] || STATUS_COLORS.stopped;
-      return `<span class="w-1.5 h-1.5 rounded-full flex-shrink-0 ${cfg.dot}" style="background:${col};" title="${(STATUS_CFG[s]||STATUS_CFG.stopped).label}"></span>`;
+      const ch = STATUS_CHARS[s] || "-";
+      return `<span class="flex-shrink-0" style="color:${col};" title="${(STATUS_CFG[s]||STATUS_CFG.stopped).label}">${ch}</span>`;
     }
     function shortenPath(p) { return p.replace(/^\/workdir\/[^/]+\//, ""); }
     function covColor(pct) { return pct > 50 ? "var(--green)" : pct > 20 ? "var(--yellow)" : "var(--red)"; }
 
     function statCard(label, value, sub) {
-      return `<div class="card p-3">
-        <div class="section-label">${label}</div>
-        <div class="text-base font-semibold mt-1" style="color:var(--text-primary);">${value}</div>
-        ${sub ? `<div class="text-[11px] mt-0.5" style="color:var(--text-tertiary);">${sub}</div>` : ""}
+      return `<div class="card px-3 py-2">
+        <div class="text-xs" style="color:var(--text-tertiary);">${label}:</div>
+        <div class="text-sm font-bold mt-0.5" style="color:var(--accent);">${value}</div>
+        ${sub ? `<div class="text-xs mt-0.5" style="color:var(--text-tertiary);">${sub}</div>` : ""}
       </div>`;
     }
     function coverageBar(label, cov) {
       const pct = cov.percent.toFixed(1);
       const col = covColor(cov.percent);
-      return `<div class="flex items-center gap-3">
-        <span class="text-[11px] w-20" style="color:var(--text-tertiary);">${label}</span>
-        <div class="flex-1 coverage-bar-bg rounded h-1.5">
-          <div class="coverage-bar-fill h-1.5 rounded" style="width:${Math.max(pct,0.5)}%;background:${col};"></div>
-        </div>
-        <span class="mono text-[11px] w-28 text-right" style="color:${col};">${pct}% <span style="color:var(--text-tertiary);">(${cov.covered}/${cov.count})</span></span>
+      const barLen = 20;
+      const filled = Math.round(cov.percent / 100 * barLen);
+      const bar = "█".repeat(filled) + "░".repeat(barLen - filled);
+      return `<div class="flex items-center gap-2">
+        <span class="text-xs w-20" style="color:var(--text-tertiary);">${label}</span>
+        <span class="cov-bar-tui text-xs" style="color:${col};">${bar}</span>
+        <span class="text-xs w-28 text-right" style="color:${col};">${pct}% <span style="color:var(--text-tertiary);">(${cov.covered}/${cov.count})</span></span>
       </div>`;
     }
 
@@ -445,9 +499,9 @@
           responsive: true, maintainAspectRatio: false,
           interaction: { mode: "index", intersect: false },
           plugins: {
-            legend: { display: visibleDS.length > 1, labels: { color: t.legend, font: { size: 10, family: "Inter" }, filter: (item) => item.text !== "min" && item.text !== "max" } },
+            legend: { display: visibleDS.length > 1, labels: { color: t.legend, font: { size: 10, family: "JetBrains Mono" }, filter: (item) => item.text !== "min" && item.text !== "max" } },
             tooltip: {
-              backgroundColor: t.tooltipBg, titleColor: t.text, bodyColor: t.textSec, borderColor: t.tooltipBorder, borderWidth: 1, titleFont: { family: "Inter" }, bodyFont: { family: "Inter" },
+              backgroundColor: t.tooltipBg, titleColor: t.text, bodyColor: t.textSec, borderColor: t.tooltipBorder, borderWidth: 1, cornerRadius: 0, titleFont: { family: "JetBrains Mono", size: 11 }, bodyFont: { family: "JetBrains Mono", size: 11 },
               filter: (item) => item.dataset.label !== "min" && item.dataset.label !== "max",
               callbacks: {
                 label: function(ctx) {
@@ -469,8 +523,8 @@
             },
           },
           scales: {
-            x: { type: "time", time: { tooltipFormat: "yyyy-MM-dd HH:mm:ss" }, grid: { color: t.grid }, ticks: { color: t.tick, font: { size: 10, family: "Inter" }, maxRotation: 0 } },
-            y: { grid: { color: t.grid }, ticks: { color: t.tick, font: { size: 10, family: "Inter" } }, title: { display: true, text: yLabel, color: t.tick, font: { size: 11, family: "Inter" } } },
+            x: { type: "time", time: { tooltipFormat: "yyyy-MM-dd HH:mm:ss" }, grid: { color: t.grid }, ticks: { color: t.tick, font: { size: 10, family: "JetBrains Mono" }, maxRotation: 0 } },
+            y: { grid: { color: t.grid }, ticks: { color: t.tick, font: { size: 10, family: "JetBrains Mono" } }, title: { display: true, text: yLabel, color: t.tick, font: { size: 11, family: "JetBrains Mono" } } },
           },
         },
       });
@@ -481,7 +535,7 @@
       const el = document.getElementById(id);
       if (!el) return;
       const t = tc();
-      const cols = { running: { bg:"#22c55e30", bd:"#22c55e" }, completed: { bg:"#3b82f630", bd:"#3b82f6" }, stopped: { bg:"#eab30830", bd:"#eab308" } };
+      const cols = { running: { bg:"#33ff9930", bd:"#33ff99" }, completed: { bg:"#66aaff30", bd:"#66aaff" }, stopped: { bg:"#ffcc0030", bd:"#ffcc00" } };
       const ds = Object.entries(dataByStatus).map(([s, v]) => ({
         label: STATUS_CFG[s]?.label || s, data: v,
         backgroundColor: cols[s]?.bg || "#64748b30", borderColor: cols[s]?.bd || "#64748b", borderWidth: 1,
@@ -491,12 +545,12 @@
         options: {
           responsive: true, maintainAspectRatio: false,
           plugins: {
-            legend: { labels: { color: t.legend, font: { size: 10, family: "Inter" } } },
+            legend: { labels: { color: t.legend, font: { size: 10, family: "JetBrains Mono" } } },
             tooltip: { backgroundColor: t.tooltipBg, titleColor: t.text, bodyColor: t.textSec, borderColor: t.tooltipBorder, borderWidth: 1 },
           },
           scales: {
-            x: { stacked: true, grid: { color: t.grid }, ticks: { color: t.tick, font: { size: 10, family: "Inter" }, maxRotation: 45 } },
-            y: { stacked: true, grid: { color: t.grid }, ticks: { color: t.tick, font: { size: 10, family: "Inter" }, stepSize: 1 }, title: { display: true, text: yLabel, color: t.tick, font: { size: 11, family: "Inter" } } },
+            x: { stacked: true, grid: { color: t.grid }, ticks: { color: t.tick, font: { size: 10, family: "JetBrains Mono" }, maxRotation: 45 } },
+            y: { stacked: true, grid: { color: t.grid }, ticks: { color: t.tick, font: { size: 10, family: "JetBrains Mono" }, stepSize: 1 }, title: { display: true, text: yLabel, color: t.tick, font: { size: 11, family: "JetBrains Mono" } } },
           },
         },
       });
@@ -520,7 +574,7 @@
       return [
         { label: "min", data: pts.map(p => ({ x: p.x, y: p.min })), borderColor: color + "00", backgroundColor: "transparent", pointRadius: 0, borderWidth: 0, fill: false },
         { label: "max", data: pts.map(p => ({ x: p.x, y: p.max })), borderColor: color + "00", backgroundColor: color + "15", pointRadius: 0, borderWidth: 0, fill: "-1" },
-        { label, data: pts.map(p => ({ x: p.x, y: p.avg })), borderColor: color, backgroundColor: color + "18", fill: false, tension: 0, pointRadius: 4, borderWidth: 2 },
+        { label, data: pts.map(p => ({ x: p.x, y: p.avg })), borderColor: color, backgroundColor: color + "18", fill: false, tension: 0, pointRadius: 3, pointStyle: "rect", borderWidth: 1.5 },
       ];
     }
 
@@ -545,7 +599,7 @@
       return [
         { label: "min", data: pts.map(p => ({ x: p.x, y: p.min })), borderColor: color + "00", backgroundColor: "transparent", pointRadius: 0, borderWidth: 0, fill: false },
         { label: "max", data: pts.map(p => ({ x: p.x, y: p.max })), borderColor: color + "00", backgroundColor: color + "15", pointRadius: 0, borderWidth: 0, fill: "-1" },
-        { label: "avg stability", data: pts.map(p => ({ x: p.x, y: p.avg })), borderColor: color, backgroundColor: color + "18", fill: false, tension: 0, pointRadius: 4, borderWidth: 2 },
+        { label: "avg stability", data: pts.map(p => ({ x: p.x, y: p.avg })), borderColor: color, backgroundColor: color + "18", fill: false, tension: 0, pointRadius: 3, pointStyle: "rect", borderWidth: 1.5 },
       ];
     }
 
@@ -558,10 +612,10 @@
       if (!pts.length) return null;
       pts.sort((a, b) => a.t - b.t);
       return [
-        { label: "Lines %",     data: pts.map(p => ({ x: p.t, y: p.tot.lines.percent })),     borderColor: "#3b82f6", backgroundColor: "#3b82f618", tension: 0, pointRadius: 4, borderWidth: 2 },
-        { label: "Branches %",  data: pts.map(p => ({ x: p.t, y: p.tot.branches.percent })),  borderColor: "#f59e0b", backgroundColor: "#f59e0b18", tension: 0, pointRadius: 4, borderWidth: 2 },
-        { label: "Functions %", data: pts.map(p => ({ x: p.t, y: p.tot.functions.percent })), borderColor: "#10b981", backgroundColor: "#10b98118", tension: 0, pointRadius: 4, borderWidth: 2 },
-        { label: "Regions %",   data: pts.map(p => ({ x: p.t, y: p.tot.regions.percent })),   borderColor: "#8b5cf6", backgroundColor: "#8b5cf618", tension: 0, pointRadius: 4, borderWidth: 2 },
+        { label: "Lines %",     data: pts.map(p => ({ x: p.t, y: p.tot.lines.percent })),     borderColor: "#66aaff", backgroundColor: "#66aaff18", tension: 0, pointRadius: 3, pointStyle: "rect", borderWidth: 1.5 },
+        { label: "Branches %",  data: pts.map(p => ({ x: p.t, y: p.tot.branches.percent })),  borderColor: "#ffcc00", backgroundColor: "#ffcc0018", tension: 0, pointRadius: 3, pointStyle: "rect", borderWidth: 1.5 },
+        { label: "Functions %", data: pts.map(p => ({ x: p.t, y: p.tot.functions.percent })), borderColor: "#33ff99", backgroundColor: "#33ff9918", tension: 0, pointRadius: 3, pointStyle: "rect", borderWidth: 1.5 },
+        { label: "Regions %",   data: pts.map(p => ({ x: p.t, y: p.tot.regions.percent })),   borderColor: "#cc66ff", backgroundColor: "#cc66ff18", tension: 0, pointRadius: 3, pointStyle: "rect", borderWidth: 1.5 },
       ];
     }
 
@@ -596,18 +650,18 @@
       container.innerHTML = "";
 
       const allBtn = document.createElement("button");
-      allBtn.textContent = "All";
-      allBtn.className = `project-tab px-2.5 py-1 text-[11px] font-medium rounded ${!selectedProject ? "active" : ""}`;
-      if (!selectedProject) allBtn.style.cssText = `background:var(--accent);color:#fff;`;
+      allBtn.textContent = "[All]";
+      allBtn.className = `project-tab px-2 py-0.5 text-xs font-medium ${!selectedProject ? "active" : ""}`;
+      if (!selectedProject) allBtn.style.cssText = `background:var(--accent);color:#000;`;
       else allBtn.style.cssText = `background:var(--bg-overlay);color:var(--text-secondary);border:1px solid var(--border);`;
       allBtn.addEventListener("click", () => { selectedProject = null; onProjectChanged(); });
       container.appendChild(allBtn);
 
       for (const p of pnames) {
         const btn = document.createElement("button");
-        btn.textContent = p;
-        btn.className = `project-tab px-2.5 py-1 text-[11px] font-medium rounded ${selectedProject === p ? "active" : ""}`;
-        if (selectedProject === p) btn.style.cssText = `background:var(--accent);color:#fff;`;
+        btn.textContent = `[${p}]`;
+        btn.className = `project-tab px-2 py-0.5 text-xs font-medium ${selectedProject === p ? "active" : ""}`;
+        if (selectedProject === p) btn.style.cssText = `background:var(--accent);color:#000;`;
         else btn.style.cssText = `background:var(--bg-overlay);color:var(--text-secondary);border:1px solid var(--border);`;
         btn.addEventListener("click", () => { selectedProject = p; onProjectChanged(); });
         container.appendChild(btn);
@@ -705,10 +759,10 @@
         const sc = harnessStatusCounts(campaigns);
         const hasRunning = sc.running > 0;
         const div = document.createElement("div");
-        div.className = "harness-item border-l-2 border-transparent px-4 py-2 cursor-pointer text-xs flex items-center gap-2";
+        div.className = "harness-item border-l-2 border-transparent px-2 py-1 cursor-pointer text-xs flex items-center gap-1";
         div.style.color = "var(--text-secondary)";
         div.dataset.name = name;
-        div.innerHTML = `${hasRunning ? statusDot("running") : ""}<span class="truncate flex-1">${name}</span><span class="mono text-[10px] flex-shrink-0" style="color:var(--text-tertiary);">${campaigns.length}</span>`;
+        div.innerHTML = `${hasRunning ? statusDot("running") + " " : "  "}<span class="truncate flex-1">${name}</span><span class="text-xs flex-shrink-0" style="color:var(--text-tertiary);">${campaigns.length}</span>`;
         div.addEventListener("click", () => {
           if (activeItem) activeItem.classList.remove("active");
           div.classList.add("active");
@@ -780,8 +834,8 @@
       const projectLabel = selectedProject || "All Projects";
 
       let html = `
-        <h2 class="text-lg font-semibold mb-0.5" style="color:var(--text-primary);">${projectLabel}</h2>
-        <p class="text-xs mb-5" style="color:var(--text-tertiary);">${harnessNames.length} harnesses, ${allC.length} total campaigns</p>
+        <h2 class="text-base font-bold mb-0.5" style="color:var(--accent);">&#9656; ${projectLabel}</h2>
+        <p class="text-xs mb-4" style="color:var(--text-tertiary);">${harnessNames.length} harnesses | ${allC.length} total campaigns</p>
         <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mb-6">
           ${statCard("Total Campaigns", allC.length.toString())}
           ${statCard("Harnesses", harnessNames.length.toString())}
@@ -1115,7 +1169,7 @@
               <td class="py-1.5 pr-2">${statusDot(r.status)}</td>
               <td class="py-1.5 pr-4" style="color:var(--text-secondary);">${r.harness}</td>
               <td class="py-1.5 px-2 mono" style="color:var(--text-tertiary); font-size:11px;">${r.id.substring(0, 16)}</td>
-              <td class="py-1.5 px-2">${statusBadge(r.status)}</td>
+              <td class="py-1.5 px-2 whitespace-nowrap">${statusBadge(r.status)}</td>
               <td class="text-right py-1.5 px-2 mono" style="font-size:10px; white-space:nowrap;">${covStr || '<span style="color:var(--text-muted);">-</span>'}</td>
               <td class="text-right py-1.5 px-2 mono" style="color:${r.lastTs ? "var(--text-secondary)" : "var(--text-muted)"}; font-size:11px;">${lastDisplay}</td>
             </tr>`;
@@ -1189,14 +1243,14 @@
       const gen = ++renderGeneration;
       const content = document.getElementById("content");
       destroyCharts();
-      content.innerHTML = '<div class="flex items-center justify-center h-32"><span class="text-xs" style="color:var(--text-tertiary);">Loading harness data...</span></div>';
+      content.innerHTML = '<div class="flex items-center justify-center h-32"><span class="text-xs" style="color:var(--text-tertiary);">loading...</span></div>';
 
       let detail;
       try {
         detail = await loadHarnessDetail(name);
       } catch (e) {
         if (gen !== renderGeneration) return;
-        content.innerHTML = `<div class="p-4 text-xs" style="color:var(--red);">Failed to load harness data: ${e.message}</div>`;
+        content.innerHTML = `<div class="p-4 text-xs" style="color:var(--red);">ERR: failed to load harness data: ${e.message}</div>`;
         return;
       }
       if (gen !== renderGeneration) return;
@@ -1213,13 +1267,13 @@
       const latStat = latStatC ? latStatC.stats[latStatC.stats.length - 1] : null;
 
       let html = `
-        <h2 class="text-lg font-semibold mb-0.5" style="color:var(--text-primary);">${name}</h2>
-        <div class="flex items-center gap-3 text-xs mb-5" style="color:var(--text-tertiary);">
+        <h2 class="text-base font-bold mb-0.5" style="color:var(--accent);">&#9656; ${name}</h2>
+        <div class="flex items-center gap-2 text-xs mb-4" style="color:var(--text-tertiary);">
           <span>${campaigns.length} campaign${campaigns.length !== 1 ? "s" : ""}</span>
-          <span style="color:var(--text-muted);">&middot;</span><span>${totalPts} data points</span>
-          ${nR ? `<span style="color:var(--text-muted);">&middot;</span>${statusBadge("running")} <span style="color:var(--text-tertiary);">${nR}</span>` : ""}
-          ${nCo ? `<span style="color:var(--text-muted);">&middot;</span>${statusBadge("completed")} <span style="color:var(--text-tertiary);">${nCo}</span>` : ""}
-          ${nS ? `<span style="color:var(--text-muted);">&middot;</span>${statusBadge("stopped")} <span style="color:var(--text-tertiary);">${nS}</span>` : ""}
+          <span>|</span><span>${totalPts} data points</span>
+          ${nR ? `<span>|</span>${statusBadge("running")} ${nR}` : ""}
+          ${nCo ? `<span>|</span>${statusBadge("completed")} ${nCo}` : ""}
+          ${nS ? `<span>|</span>${statusBadge("stopped")} ${nS}` : ""}
         </div>`;
 
       if (latStat) {
@@ -1342,7 +1396,7 @@
           return `<tr class="campaign-row cursor-pointer" style="border-bottom:1px solid var(--border-subtle);" data-harness="${name}" data-cid="${c.id}">
             <td class="py-1.5 pr-2">${statusDot(c.status)}</td>
             <td class="py-1.5 pr-4"><code class="mono" style="color:var(--text-tertiary); font-size:11px;">${c.id.substring(0, 16)}</code></td>
-            <td class="py-1.5 px-2">${statusBadge(c.status)}</td>
+            <td class="py-1.5 px-2 whitespace-nowrap">${statusBadge(c.status)}</td>
             <td class="text-right py-1.5 px-2" style="color:var(--text-tertiary);">${c.stats.length}</td>
             ${hasCovDeltas ? deltaCell(d?.lines) : ''}
             ${hasCovDeltas ? deltaCell(d?.branches) : ''}
@@ -1464,10 +1518,10 @@
       }
 
       const ds = [
-        { label: "Lines %",     data: pts.map(p => ({ x: p.t, y: p.lines })),     borderColor: "#3b82f6", backgroundColor: "#3b82f618", tension: 0, pointRadius: 4, borderWidth: 2 },
-        { label: "Branches %",  data: pts.map(p => ({ x: p.t, y: p.branches })),  borderColor: "#f59e0b", backgroundColor: "#f59e0b18", tension: 0, pointRadius: 4, borderWidth: 2 },
-        { label: "Functions %", data: pts.map(p => ({ x: p.t, y: p.functions })), borderColor: "#10b981", backgroundColor: "#10b98118", tension: 0, pointRadius: 4, borderWidth: 2 },
-        { label: "Regions %",   data: pts.map(p => ({ x: p.t, y: p.regions })),   borderColor: "#8b5cf6", backgroundColor: "#8b5cf618", tension: 0, pointRadius: 4, borderWidth: 2 },
+        { label: "Lines %",     data: pts.map(p => ({ x: p.t, y: p.lines })),     borderColor: "#66aaff", backgroundColor: "#66aaff18", tension: 0, pointRadius: 3, pointStyle: "rect", borderWidth: 1.5 },
+        { label: "Branches %",  data: pts.map(p => ({ x: p.t, y: p.branches })),  borderColor: "#ffcc00", backgroundColor: "#ffcc0018", tension: 0, pointRadius: 3, pointStyle: "rect", borderWidth: 1.5 },
+        { label: "Functions %", data: pts.map(p => ({ x: p.t, y: p.functions })), borderColor: "#33ff99", backgroundColor: "#33ff9918", tension: 0, pointRadius: 3, pointStyle: "rect", borderWidth: 1.5 },
+        { label: "Regions %",   data: pts.map(p => ({ x: p.t, y: p.regions })),   borderColor: "#cc66ff", backgroundColor: "#cc66ff18", tension: 0, pointRadius: 3, pointStyle: "rect", borderWidth: 1.5 },
       ];
       createLineChart("chart-file-cov", ds, "coverage %");
       detail.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -1478,14 +1532,14 @@
       const gen = ++renderGeneration;
       const content = document.getElementById("content");
       destroyCharts();
-      content.innerHTML = '<div class="flex items-center justify-center h-32"><span class="text-xs" style="color:var(--text-tertiary);">Loading campaign data...</span></div>';
+      content.innerHTML = '<div class="flex items-center justify-center h-32"><span class="text-xs" style="color:var(--text-tertiary);">loading...</span></div>';
 
       let detail;
       try {
         detail = await loadHarnessDetail(harnessName);
       } catch (e) {
         if (gen !== renderGeneration) return;
-        content.innerHTML = `<div class="p-4 text-xs" style="color:var(--red);">Failed to load campaign data: ${e.message}</div>`;
+        content.innerHTML = `<div class="p-4 text-xs" style="color:var(--red);">ERR: failed to load campaign data: ${e.message}</div>`;
         return;
       }
       if (gen !== renderGeneration) return;
@@ -1504,16 +1558,16 @@
       const latStability = latStat && latStat.stability != null ? latStat.stability.toFixed(2) : null;
 
       let html = `
-        <div class="flex items-center gap-2 mb-4 text-xs" style="color:var(--text-tertiary);">
+        <div class="flex items-center gap-1 mb-3 text-xs" style="color:var(--text-tertiary);">
           <span class="cursor-pointer hover-link" id="breadcrumb-harness">${harnessName}</span>
           <span style="color:var(--text-muted);">/</span>
-          <span style="color:var(--text-secondary);">Campaign</span>
+          <span style="color:var(--text-secondary);">campaign</span>
         </div>
-        <div class="flex items-center gap-3 mb-1">
-          <h2 class="text-lg font-semibold mono" style="color:var(--text-primary);">${c.id}</h2>
+        <div class="flex items-center gap-2 mb-1">
+          <h2 class="text-base font-bold" style="color:var(--accent);">&#9656; ${c.id}</h2>
           ${statusBadge(c.status)}
         </div>
-        <p class="text-xs mb-5" style="color:var(--text-tertiary);">${c.stats.length} data points &middot; ${firstTs} &rarr; ${lastTs} &middot; duration ${duration}</p>
+        <p class="text-xs mb-4" style="color:var(--text-tertiary);">${c.stats.length} data points | ${firstTs} -&gt; ${lastTs} | duration ${duration}</p>
 
         <div class="grid grid-cols-2 md:grid-cols-${cHasStability ? "5" : "4"} gap-3 mb-6">
           ${statCard("Status", (STATUS_CFG[c.status]||STATUS_CFG.stopped).label)}
@@ -1590,12 +1644,12 @@
       if (c.stats.length > 0) {
         const execData = c.stats.map(s => ({ x: new Date(s.timestamp), y: s.execs_per_sec }));
         const corpusData = c.stats.map(s => ({ x: new Date(s.timestamp), y: s.corpus_count }));
-        createLineChart("chart-c-exec", [{ label: "execs/sec", data: execData, borderColor: "#3b82f6", backgroundColor: "#3b82f618", fill: true, tension: 0, pointRadius: 3, borderWidth: 1.5 }], "execs/sec");
-        createLineChart("chart-c-corpus", [{ label: "corpus count", data: corpusData, borderColor: "#10b981", backgroundColor: "#10b98118", fill: true, tension: 0, pointRadius: 3, borderWidth: 1.5 }], "corpus count");
+        createLineChart("chart-c-exec", [{ label: "execs/sec", data: execData, borderColor: "#66aaff", backgroundColor: "#66aaff18", fill: true, tension: 0, pointRadius: 2, pointStyle: "rect", borderWidth: 1.5 }], "execs/sec");
+        createLineChart("chart-c-corpus", [{ label: "corpus count", data: corpusData, borderColor: "#33ff99", backgroundColor: "#33ff9918", fill: true, tension: 0, pointRadius: 2, pointStyle: "rect", borderWidth: 1.5 }], "corpus count");
       }
       if (cHasStability) {
         const stabData = c.stats.filter(s => s.stability != null).map(s => ({ x: new Date(s.timestamp), y: s.stability }));
-        if (stabData.length) createLineChart("chart-c-stability", [{ label: "stability", data: stabData, borderColor: "#f59e0b", backgroundColor: "#f59e0b18", fill: true, tension: 0, pointRadius: 3, borderWidth: 1.5 }], "stability");
+        if (stabData.length) createLineChart("chart-c-stability", [{ label: "stability", data: stabData, borderColor: "#ffcc00", backgroundColor: "#ffcc0018", fill: true, tension: 0, pointRadius: 2, pointStyle: "rect", borderWidth: 1.5 }], "stability");
       }
 
       // Stats History sortable table
@@ -1742,7 +1796,7 @@
         window.addEventListener("popstate", () => navigateFromHash());
       } catch (err) {
         document.getElementById("harness-list").innerHTML =
-          `<div class="p-4 text-xs" style="color:var(--red);">Failed to load data.json: ${err.message}</div>`;
+          `<div class="p-4 text-xs" style="color:var(--red);">ERR: failed to load data.json: ${err.message}</div>`;
       }
     }
 
