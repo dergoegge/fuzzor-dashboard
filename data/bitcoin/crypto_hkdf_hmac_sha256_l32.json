@@ -1,1 +1,1 @@
-{"campaigns": []}
+{"campaigns": [{"id": "113b2d2c251adbb94738444f4b4cc470a9522062b3d961bf99354ffce3264de6", "stats": [{"timestamp": "2026-03-21T15:54:12Z", "execs_per_sec": 90191, "corpus_count": 55, "stability": 97.12}, {"timestamp": "2026-03-21T15:55:12Z", "execs_per_sec": 95068, "corpus_count": 55, "stability": 97.12}, {"timestamp": "2026-03-21T15:56:12Z", "execs_per_sec": 100739, "corpus_count": 55, "stability": 97.12}, {"timestamp": "2026-03-21T15:57:12Z", "execs_per_sec": 104059, "corpus_count": 55, "stability": 97.12}], "coverage": null, "status": "running"}]}
